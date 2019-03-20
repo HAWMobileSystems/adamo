@@ -14,7 +14,9 @@ Die einzelnen Bestandteile des Projekts liegen verteilt über verschiedene Repos
 Durch ausführen der Datei setup.sh werden die zugehörigen Repositories local heruntergeladen.
 
 Zur Initialisierung der einzelnen Submodule muss folgender Befehl ausgeführt werden.
+Zum Updaten der Submodule zweiten Befehl nutzen.
 ```
 git submodule update --init --recursive
+git pull origin master --recurse-submodules
 
 ```
