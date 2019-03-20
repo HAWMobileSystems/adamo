@@ -9,8 +9,12 @@ Dazu wurde die BPMN 2.0, zur Darstellung verschiedener Prozessvarianten erweiter
 
 ## Installation 
 
+
 Die einzelnen Bestandteile des Projekts liegen verteilt über verschiedene Repositories.
 Durch ausführen der Datei setup.sh werden die zugehörigen Repositories local heruntergeladen.
+
+Zur Initialisierung der einzelnen Submodule muss folgender Befehl ausgeführt werden.
 ```
-sh setup.sh
+git submodule update --init --recursive
+
 ```
