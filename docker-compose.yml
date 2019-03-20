@@ -8,7 +8,7 @@ version: '3.6'
 services:
   adamo-application:
     build:
-      context: ./adamo-frontend-application
+      context: ./adamo-frontend-application/angular2
     image: adamo-application/latest
     ports:
       - '${APP_PORT}:80'
