@@ -29,8 +29,8 @@ services:
       # - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - /mosquitto/data 
       - /mosquitto/log
-    # networks:
-      # - default
+    networks:
+      - default
 
 # docker run -it -p 1883:1883 -p 9001:9001 
 # -v mosquitto.conf:/mosquitto/config/mosquitto.conf 
