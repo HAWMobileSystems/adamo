@@ -13,3 +13,6 @@
 [submodule "adamo-postgres-database"]
 	path = adamo-postgres-database
 	url = git@github.com:HAWMobileSystems/adamo-postgres-database.git
+[submodule "adamo-nest-server"]
+	path = adamo-nest-server
+	url = git@github.com:HAWMobileSystems/adamo-nest-server.git
