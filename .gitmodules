@@ -1,18 +1,19 @@
 [submodule "adamo-frontend-application"]
 	path = adamo-frontend-application
-	url = git@github.com:HAWMobileSystems/adamo-frontend-application.git
+	url = git@gitlab.com:ipim/adamo-frontend-application.git
 [submodule "adamo-documentation"]
 	path = adamo-documentation
-	url = git@github.com:HAWMobileSystems/adamo-documentation.git
+	url = git@gitlab.com:ipim/adamo-documentation.git
 [submodule "adamo-express-server"]
 	path = adamo-express-server
-	url = git@github.com:HAWMobileSystems/adamo-express-server.git
+	url = git@gitlab.com:ipim/adamo-express-server.git
 [submodule "adamo-mqtt-server"]
 	path = adamo-mqtt-server
-	url = git@github.com:HAWMobileSystems/adamo-mqtt-server.git
+	url = git@gitlab.com:ipim/adamo-mqtt-server.git
+
 [submodule "adamo-postgres-database"]
 	path = adamo-postgres-database
-	url = git@github.com:HAWMobileSystems/adamo-postgres-database.git
+	url = git@gitlab.com:ipim/adamo-postgres-database.git
 [submodule "adamo-nest-server"]
 	path = adamo-nest-server
-	url = git@github.com:HAWMobileSystems/adamo-nest-server.git
+	url = git@gitlab.com:ipim/adamo-nest-server.git
