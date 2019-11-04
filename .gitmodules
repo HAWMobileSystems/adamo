@@ -1,6 +1,7 @@
 [submodule "adamo-frontend-application"]
 	path = adamo-frontend-application
 	url = git@gitlab.com:ipim/adamo-frontend-application.git
+	branch = angular-migration
 [submodule "adamo-documentation"]
 	path = adamo-documentation
 	url = git@gitlab.com:ipim/adamo-documentation.git
@@ -10,10 +11,10 @@
 [submodule "adamo-mqtt-server"]
 	path = adamo-mqtt-server
 	url = git@gitlab.com:ipim/adamo-mqtt-server.git
-
 [submodule "adamo-postgres-database"]
 	path = adamo-postgres-database
 	url = git@gitlab.com:ipim/adamo-postgres-database.git
 [submodule "adamo-nest-server"]
 	path = adamo-nest-server
 	url = git@gitlab.com:ipim/adamo-nest-server.git
+	branch = development
