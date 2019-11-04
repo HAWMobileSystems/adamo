@@ -6,43 +6,26 @@ version: '3.6'
   # postgres-data: {}
 
 services:
-  adamo-application:
+  # Modeler Component in Angular (this is a static build served with nginx)
+  adamo-frontend-application:
     build:
       context: ./adamo-frontend-application/angular2
     image: adamo-application/latest
     ports:
       - '${APP_PORT}:80'  
-  adamo-mosquitto:
-    image: eclipse-mosquitto
-    hostname: mosquitto
-    # container_name: mosquitto
+
+  # MQTT Broker for realtime data exchange
+  adamo-mqtt-server: 
+    build: ./adamo-mqtt-server
+    ports: 
+      - '1883:1883'
+      - '4711:4711'
     env_file:
       - .env
-    expose:
-      - "1883"
-      - "9001"
-    ports:
-      - "1883:1883"
-      - "9001:9001"
-    volumes:
-      - ./adamo-mqtt-server/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
-      # - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - /mosquitto/data 
-      - /mosquitto/log
-    networks:
-      - default
-
-# docker run -it -p 1883:1883 -p 9001:9001 
-# -v mosquitto.conf:/mosquitto/config/mosquitto.conf 
-# -v /mosquitto/data -v /mosquitto/log eclipse-mosquitto
-  # adamo-mqtt:
-  #   build: ./API
-  #   env_file:
-  #     - .env
-  #   ports:
-  #     - '${MQTT_PORT}:${MQTT_PORT}'
-  #   command: ['npm', 'run', 'mqtt']
-  adamo-server:
+    command: ['npm', 'run', 'start']
+  
+  # Express.js Backend Server
+  adamo-express-server:
     build: ./adamo-express-server
     env_file:
       - .env
@@ -51,7 +34,7 @@ services:
       # - '${MQTT_PORT}:${MQTT_PORT}'
     command: ['npm', 'run', 'server']
     depends_on:
-      - postgres
+      - adamo-postgres-database
         # condition: service_healthy
     environment:
       # - DATABASE_URL=postgres://postgres:12341324@postgres:5432/ipim
@@ -60,7 +43,8 @@ services:
     # networks:
     #   - back-tier
 
-  postgres:
+  # Postgres Database
+  adamo-postgres-database:
     build: ./adamo-postgres-database
     # image: postgres:${POSTGRES_IMAGE_VERSION}
     environment:
@@ -81,6 +65,38 @@ services:
 volumes:
   pgdata:
     external: true
+
+  # adamo-mosquitto:
+  #   image: eclipse-mosquitto
+  #   hostname: mosquitto
+  #   # container_name: mosquitto
+  #   expose:
+  #     - "1883"
+  #     - "9001"
+  #   ports:
+  #     - "1883:1883"
+  #     - "9001:9001"
+  #   volumes:
+  #     - ./adamo-mqtt-server/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+  #     # - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+  #     - /mosquitto/data 
+  #     - /mosquitto/log
+  #   networks:
+  #     - default
+
+# docker run -it -p 1883:1883 -p 9001:9001 
+# -v mosquitto.conf:/mosquitto/config/mosquitto.conf 
+# -v /mosquitto/data -v /mosquitto/log eclipse-mosquitto
+  # adamo-mqtt:
+  #   build: ./API
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - '${MQTT_PORT}:${MQTT_PORT}'
+  #   command: ['npm', 'run', 'mqtt']
+  
+
+  
       # - /var/lib/postgresql/data
       # - postgres-data:/backups
     # volumes:
