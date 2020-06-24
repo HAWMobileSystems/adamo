@@ -1,119 +1,113 @@
 version: '3.6'
-
-# volumes:
-  # local_postgres_data:
-  # local_postgres_data_backups:
-  # postgres-data: {}
-
 services:
   # Modeler Component in Angular (this is a static build served with nginx)
   adamo-frontend-application:
     build:
-      context: ./adamo-frontend-application/angular2
+      context: ./adamo-frontend-application
     image: adamo-application/latest
     ports:
-      - '${APP_PORT}:80'  
+      - '${APP_PORT}:80'
 
   # MQTT Broker for realtime data exchange
-  adamo-mqtt-server: 
+  adamo-mqtt-server:
     build: ./adamo-mqtt-server
-    ports: 
+    ports:
       - '1883:1883'
       - '4711:4711'
     env_file:
       - .env
     command: ['npm', 'run', 'start']
-  
-  # Express.js Backend Server
-  adamo-express-server:
-    build: ./adamo-express-server
+
+  # Nest Backend Server
+  adamo-nest-server:
+    container_name: adamo-nest-server
+    build: ./adamo-nest-server
     env_file:
       - .env
     ports:
-      - '${SERVER_PORT}:${SERVER_PORT}'
-      # - '${MQTT_PORT}:${MQTT_PORT}'
-    command: ['npm', 'run', 'server']
+      - '${SERVER_PORT:-3330}:${SERVER_PORT:-3330}'
+    command: ['npm', 'run', 'start:dev']
     depends_on:
       - adamo-postgres-database
-        # condition: service_healthy
-    environment:
+      # condition: service_healthy
+    # environment:
       # - DATABASE_URL=postgres://postgres:12341324@postgres:5432/ipim
-      - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@postgres:${DB_HOST}/${DB_NAME}
+      # - DATABASE_URL=adamo-postgres-database://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
       # - PORT=3000
-    # networks:
-    #   - back-tier
+    links:
+      - adamo-postgres-database
+    networks:
+      - backend
 
   # Postgres Database
   adamo-postgres-database:
+    
+    container_name: adamo-postgres
+    # image: postgres:alpine
+    restart: always
     build: ./adamo-postgres-database
-    # image: postgres:${POSTGRES_IMAGE_VERSION}
-    environment:
-      # POSTGRES_DB: ipim
-      # POSTGRES_USER: postgres
-      # POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: '${DB_USER}'
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
     env_file: .env
+    #    # image: postgres:${POSTGRES_IMAGE_VERSION}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE:-adamo}
+      POSTGRES_USER:  ${POSTGRES_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES:HOST: ${POSTGRES_HOST:-postgres}
+      PGDATA: /data/postgres
+    networks:
+      - backend
     ports:
       - '5432:5432'
+    volumes:
+      - adamo-pgdata:/var/lib/postgresql/data
     # volumes:
-    #   - pgdata:/var/lib/postgresql/data
+    #   - adamo-postgres:/data/postgres
 
-      # docker volume create --name=pgdata
+  pgadmin:
+    container_name: adamo-pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    volumes:
+        - pgadmin:/root/.pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - backend
+    restart: unless-stopped
 
+  # camunda-engine: 
+  #   container_name: camunda-engine
+  #   image: camunda/camunda-bpm-platform
+  #   ports: 
+  #     - '8051:8080'
+  #   environment:
+  #     DB_DRIVER: com.mysql.jdbc.driver
+  #     DB_URL: jdbc:mysql://mysql-db:3306/camunda_db?autoReconnect=true
+  #     DB_USERNAME: root
+  #     DB_PASSWORD: root
+  #   depends_on: 
+  #     - 'mysql-db'
+
+  # mysql-db:
+  #   image: mysql:latest
+  #   container_name: camunda_mysql
+  #   ports: 
+  #     - '8050:3306'
+  #   environment: 
+  #     - MYSQL_ROOT_PASSWORD: root
+  #     - MYSQL_USER: root
+  #     - MYSQL_DATABASE: camunda_db
+
+# Docker for windows gives you wrong ownership on local used volumes
+# docker volume create --name=adamo-pgdata
 volumes:
-  pgdata:
+  pgadmin:
+  adamo-pgdata:
     external: true
 
-  # adamo-mosquitto:
-  #   image: eclipse-mosquitto
-  #   hostname: mosquitto
-  #   # container_name: mosquitto
-  #   expose:
-  #     - "1883"
-  #     - "9001"
-  #   ports:
-  #     - "1883:1883"
-  #     - "9001:9001"
-  #   volumes:
-  #     - ./adamo-mqtt-server/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
-  #     # - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-  #     - /mosquitto/data 
-  #     - /mosquitto/log
-  #   networks:
-  #     - default
 
-# docker run -it -p 1883:1883 -p 9001:9001 
-# -v mosquitto.conf:/mosquitto/config/mosquitto.conf 
-# -v /mosquitto/data -v /mosquitto/log eclipse-mosquitto
-  # adamo-mqtt:
-  #   build: ./API
-  #   env_file:
-  #     - .env
-  #   ports:
-  #     - '${MQTT_PORT}:${MQTT_PORT}'
-  #   command: ['npm', 'run', 'mqtt']
-  
-
-  
-      # - /var/lib/postgresql/data
-      # - postgres-data:/backups
-    # volumes:
-    # - ${DATA_SAVE_PATH}/postgres:/var/lib/postgresql/data
-    # networks:
-    #   - back-tier
-  # camunda-platform:
-  # image: docker-camunda-platform
-  #
-  # application:
-  #   build: ./angular2
-  #   networks:
-  #     - front-tier
-  #     - back-tier
-  # POSTGRES_DB: ${POSTGRES_DB}
-  # POSTGRES_USER: ${POSTGRES_USER}
-# networks:
-#   front-tier:
-#   back-tier:
-
+networks:
+  backend:
+    driver: bridge
