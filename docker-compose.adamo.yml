@@ -10,7 +10,8 @@ services:
     image: registry.gitlab.com/ipim/adamo-frontend-application
     environment:
       VIRTUAL_HOST: ${ADAMO_DOMAINS}
-      VIRTUAL_PORT: 2368
+
+      VIRTUAL_PORT: 80
 
       LETSENCRYPT_HOST: ${ADAMO_DOMAINS}
       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
