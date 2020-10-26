@@ -2,14 +2,15 @@ version: '3.6'
 services:
   # Modeler Component in Angular (this is a static build served with nginx)
   adamo-frontend-application:
-    build:
-      context: ./adamo-frontend-application
+    container_name: adamo-frontend-server
+    build: ./adamo-frontend-application
     image: adamo-application/latest
     ports:
       - '${APP_PORT}:80'
 
   # MQTT Broker for realtime data exchange
   adamo-mqtt-server:
+    container_name: adamo-mqtt-server
     build: ./adamo-mqtt-server
     ports:
       - '1883:1883'
@@ -29,11 +30,7 @@ services:
     command: ['npm', 'run', 'start:dev']
     depends_on:
       - adamo-postgres-database
-      # condition: service_healthy
-    # environment:
-      # - DATABASE_URL=postgres://postgres:12341324@postgres:5432/ipim
-      # - DATABASE_URL=adamo-postgres-database://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
-      # - PORT=3000
+
     links:
       - adamo-postgres-database
     networks:

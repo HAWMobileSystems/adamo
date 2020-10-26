@@ -1,15 +1,15 @@
 version: "3.6"
 services:
   adamo-application: 
-    build: ./angular2
+    build: .angular-frontend-applicatoion/angular2
     env_file: 
       - .env
-    ports: 
-      - "8000:8000"
+    ports:
+      - "8085:8000"     # external : internal
     command: ["npm", "run", "build"]
 
-  adamo-server:
-    build: ./API 
+  adamo-mqtt-broker:
+    build: .adamo-nest-server/
     # container_name: 
     # image: "node:10"
     # working_dir: /usr/src/app
@@ -31,6 +31,9 @@ services:
     # networks: 
     #   - back-tier
 
+
+  adamo-backend-server:
+  
   postgres:
     # healthcheck:
     #   test: ["CMD-SHELL", "pg_isready -U postgres"]
