@@ -39,7 +39,7 @@ services:
   # Postgres Database
   adamo-postgres-database:
 
-    image: postgres:${POSTGRES_IMAGE_VERSION}
+    image: postgres
     container_name: adamo-postgres
     # image: postgres:alpine
     restart: always
