@@ -38,11 +38,12 @@ services:
 
   # Postgres Database
   adamo-postgres-database:
-    
+
+    image: postgres:${POSTGRES_IMAGE_VERSION}
     container_name: adamo-postgres
     # image: postgres:alpine
     restart: always
-    build: ./adamo-postgres-database
+    # build: ./adamo-postgres-database
     env_file: .env
     #    # image: postgres:${POSTGRES_IMAGE_VERSION}
     environment:
