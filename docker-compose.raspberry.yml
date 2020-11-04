@@ -27,7 +27,7 @@ services:
       - .env
     ports:
       - '${SERVER_PORT:-3330}:${SERVER_PORT:-3330}'
-    command: ['npm', 'run', 'start:dev']
+    command: ['npm', 'run', 'start:hmr']
     depends_on:
       - adamo-postgres-database
 
@@ -63,7 +63,7 @@ services:
 
   pgadmin:
     container_name: adamo-pgadmin
-    image: dpage/pgadmin4
+    image: biarms/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}

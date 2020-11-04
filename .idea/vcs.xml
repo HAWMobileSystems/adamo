@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/adamo-documentation" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/adamo-express-server" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/adamo-frontend-application" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/adamo-mqtt-server" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/adamo-nest-server" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/adamo-postgres-database" vcs="Git" />
+  </component>
+</project>

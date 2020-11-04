@@ -1,0 +1,93 @@
+version: '3.6'
+
+  # volumes:
+  # local_postgres_data:
+  # local_postgres_data_backups:
+# postgres-data: {}
+
+services:
+  adamo-frontend-application:
+    image: registry.gitlab.com/ipim/adamo-frontend-application
+    environment:
+      VIRTUAL_HOST: ${ADAMO_DOMAINS}
+
+      VIRTUAL_PORT: 80
+
+      LETSENCRYPT_HOST: ${ADAMO_DOMAINS}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+    ports:
+      - '${APP_PORT}:80'
+
+  adamo-mqtt-server:
+    image: registry.gitlab.com/ipim/adamo-mqtt-server
+    #build: ./adamo-mqtt-server
+    ports:
+      - '1883:1883'
+      - '4711:4711'
+    env_file:
+      - .env
+    command: ['npm', 'run', 'start']
+
+    # Nest Backend Server
+  adamo-nest-server:
+    image: registry.gitlab.com/ipim/adamo-nest-server
+    #entrypoint: ["/bin/bash", "./nest.entrypoint.sh"]
+    #container_name: adamo-nest-server
+    #build: ./adamo-nest-server
+    env_file:
+      - .env
+    ports:
+      - '${SERVER_PORT:-3330}:${SERVER_PORT:-3330}'
+    #command: ['npm', 'run', 'start:dev']
+    depends_on:
+      - adamo-postgres-database
+      # condition: service_healthy
+      # environment:
+      # - DATABASE_URL=postgres://postgres:12341324@postgres:5432/ipim
+      # - DATABASE_URL=adamo-postgres-database://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
+      # - PORT=3000
+    links:
+      - adamo-postgres-database
+#    networks:
+#      - backend
+
+    # Postgres Database
+  adamo-postgres-database:
+    #container_name: adamo-postgres
+    image: postgres:alpine
+    restart: always
+    #build: ./adamo-postgres-database
+    env_file: .env
+    #    # image: postgres:${POSTGRES_IMAGE_VERSION}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE:-adamo}
+      POSTGRES_USER:  ${POSTGRES_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES:HOST: ${POSTGRES_HOST:-postgres}
+      PGDATA: /data/postgres
+#    networks:
+#      - backend
+    ports:
+      - '5432:5432'
+    volumes:
+      - adamo-pgdata:/var/lib/postgresql/data
+    # volumes:
+    #   - adamo-postgres:/data/postgres
+
+  pgadmin:
+    container_name: adamo-pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    volumes:
+      - pgadmin:/root/.pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+#    networks:
+#      - backend
+    restart: unless-stopped
+
+volumes:
+  adamo-pgdata:
+  pgadmin:
